@@ -1,0 +1,13 @@
+﻿@model List<Post>
+@{
+    ViewData["Title"] = "Global";
+}
+<h2>Global</h2>
+@if (Model != null)
+{
+    foreach (var post in Model)
+    {
+        <a href="~/Post/Info?postId=@post.Id">@post.Head</a>
+        <hr />
+    }
+}

@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "Info";
+} 
+@model PostItCore.ViewModels.AccountInfo
+<h2>Info</h2><hr />
+<a href="~/Users/Posts?userId=@Model.Id">Posts</a>
+<form method="get" asp-controller="Post" asp-action="Create">
+    <input type="submit" value="Create new" />
+</form>
+<hr />
+<p>EMail: @Model.EMail</p><hr />
+<p>Nick: @Model.Nick</p>
+<form method="get" asp-controller="Account" asp-action="Edit">
+    <input type="submit" value="Edit" />
+</form>
+<hr />
+<p>Reputation: @Model.Rep</p>
+<hr />
+<form method="get" asp-controller="Account" asp-action="ChangePassword">
+    <input type="submit" value="Change Password" />
+</form>
+
+
