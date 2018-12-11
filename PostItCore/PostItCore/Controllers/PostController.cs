@@ -58,8 +58,11 @@ namespace PostItCore.Controllers
             model.UserId = post.UserId;
             var user = await _userManager.FindByIdAsync(model.UserId);
             model.UserNick = user.Nick;
-            var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-            model.Favor = context.Favors.Any(x => x.UserId == currentUser.Id && x.PostId == postId);
+            if (User.Identity.IsAuthenticated)
+            {
+                var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+                model.Favor = context.Favors.Any(x => x.UserId == currentUser.Id && x.PostId == postId);
+            }
             return View(model);
         }
         [HttpPost]
