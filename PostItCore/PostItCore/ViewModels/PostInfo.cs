@@ -16,5 +16,6 @@ namespace PostItCore.ViewModels
         public DateTime Date { get; set; }
         public int GroupId { get; set; }
         public string GroupName { get; set; }
+        public bool Favor { get; set; }
     }
 }
