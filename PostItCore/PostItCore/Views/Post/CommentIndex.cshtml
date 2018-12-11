@@ -1,0 +1,50 @@
+﻿@model List<PostItCore.ViewModels.CommentsInfo>
+@{
+    ViewData["Title"] = "CommentIndex";
+}
+<h2>Comments</h2>
+<hr />
+@if (Model.Any())
+{
+<a href="~/Post/Info?postId=@Model.First().PostId">Back to post</a>
+    <hr />
+@if (Convert.ToInt32(ViewData["Pages"]) != 0)
+{
+    if (Model.First().Page == 0)
+    {
+        <a href="~/Post/CommentIndex?postId=@Model.First().PostId&page=@(Model.First().Page + 1)">Next</a>
+    }
+    else if (Model.First().Page == Convert.ToInt32(ViewData["Pages"]))
+    {
+        <a href="~/Post/CommentIndex?postId=@Model.First().PostId&page=@(Model.First().Page - 1)">Previous</a>
+    }
+    else
+    {
+        <a href="~/Post/CommentIndex?postId=@Model.First().PostId&page=@(Model.First().Page - 1)">Previous  </a>
+        <a href="~/Post/CommentIndex?postId=@Model.First().PostId&page=@(Model.First().Page + 1)">Next</a>
+    }
+}
+@foreach (var comment in Model)
+{
+    <hr />
+    <a href="~/User/Info?Id=@comment.UserId"><h3>@comment.UserNick</h3></a>
+    <p>@comment.Desc</p>
+    <p>Reputation @comment.Rep</p>
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (!comment.Favor)
+        {
+            <form method="post" action="~/Post/CommentIndex?postId=@comment.PostId&commentId=@comment.Id&page=@comment.Page&favor=true&userId=@comment.UserId">
+                <input type="submit" value="Respect" class="btn btn-default" />
+            </form>
+        }
+        else
+        {
+            <form method="post" action="~/Post/CommentIndex?postId=@comment.PostId&commentId=@comment.Id&page=@comment.Page&favor=false&userId=@comment.UserId">
+                <input type="submit" value="Disrespect" class="btn btn-default" />
+            </form>
+        }
+    }
+    <p>@comment.Date</p>
+}
+}

@@ -1,13 +1,29 @@
-﻿@model List<Post>
+﻿@model PostItCore.ViewModels.PostIndex
 @{
     ViewData["Title"] = "Global";
 }
 <h2>Global</h2>
+@if (Convert.ToInt32(ViewData["Pages"]) != 0)
+{
+    if (Model.Page == 0)
+    {
+        <a href="~/Post/Index?postId=@Model.Posts.First().Id&page=@(Model.Page + 1)">Next</a>
+    }
+    else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+    {
+        <a href="~/Post/CommentIndex?postId=@Model.Posts.First().Id&page=@(Model.Page - 1)">Previous</a>
+    }
+    else
+    {
+        <a href="~/Post/CommentIndex?postId=@Model.Posts.First().Id&page=@(Model.Page - 1)">Previous    </a>
+        <a href="~/Post/CommentIndex?postId=@Model.Posts.First().Id&page=@(Model.Page + 1)">Next</a>
+    }
+}
 @if (Model != null)
 {
-    foreach (var post in Model)
+    foreach (var post in Model.Posts)
     {
-        <a href="~/Post/Info?postId=@post.Id">@post.Head</a>
         <hr />
+        <a href="~/Post/Info?postId=@post.Id">@post.Head</a>
     }
 }

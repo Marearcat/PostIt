@@ -11,18 +11,34 @@
 
     if (!Model.Favor)
     {
-        <form method="post" action="~/Post/Info?postId=@Model.Id&favor=true">
+        <form method="post" action="~/Post/Info?postId=@Model.Id&favor=true&userId=@Model.UserId">
             <input type="submit" value="Respect" class="btn btn-default" />
         </form>
     }
     else
     {
-        <form method="post" action="~/Post/Info?postId=@Model.Id&favor=false">
+        <form method="post" action="~/Post/Info?postId=@Model.Id&favor=false&userId=@Model.UserId">
             <input type="submit" value="Disrespect" class="btn btn-default" />
         </form>
     }
 }
-    <p>Reputation: @Model.Rep</p>
-    <p>@Model.Date</p>
-    <a href="~/User/Info?Id=@Model.UserId">@Model.UserNick</a>
+<p>Reputation: @Model.Rep</p>
+<p>@Model.Date</p>
+<a href="~/User/Info?Id=@Model.UserId">@Model.UserNick</a>
+@if (Model.GroupId != 0)
+{
     <a href="~/Group/Info?Id=@Model.GroupId">@Model.GroupName</a>
+}
+<hr />
+@if (User.Identity.IsAuthenticated)
+{
+    <form method="get" action="~/Post/CommentCreate?postId=@Model.Id">
+        <input type="hidden" value="@Model.Id" name="postId" class="btn btn-default" />
+        <input type="submit" value="Comment" class="btn btn-default" />
+    </form>
+    <hr />
+}
+    <form method="get" action="~/Post/CommentIndex?postId=@Model.Id">
+        <input type="hidden" value="@Model.Id" name="postId" class="btn btn-default" />
+        <input type="submit" value="Comment List" class="btn btn-default" />
+    </form>

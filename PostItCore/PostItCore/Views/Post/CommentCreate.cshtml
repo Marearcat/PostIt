@@ -1,0 +1,22 @@
+﻿@model PostItCore.ViewModels.CreateComment
+@{
+    ViewData["Title"] = "Comment Create";
+}
+
+<h2>Comment Create</h2>
+<form asp-action="CommentCreate" asp-controller="Post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <input type="hidden" asp-for="UserId" value="@ViewData["userId"]" />
+    </div>
+    <div class="form-group">
+        <input type="hidden" asp-for="PostId" value="@ViewData["postId"]" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Desc" class="control-label">Description</label>
+        <input type="text" asp-for="Desc" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Comment" class="btn btn-default" />
+    </div>
+</form>
