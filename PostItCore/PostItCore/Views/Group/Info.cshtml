@@ -1,0 +1,47 @@
+﻿@model PostItCore.ViewModels.GroupInfo
+
+<h2>@Model.Group.Title</h2>
+<p>Description: @Model.Group.Desc</p>
+<p>Reputation: @Model.Group.Rep</p>
+<a href="~/Users/Info?Id=@Model.Group.AdminId">@Model.AdminNick</a>
+@if (User.Identity.IsAuthenticated)
+{
+    <form asp-controller="Post" asp-action="Index">
+        <input type="hidden" value="@Model.Group.Id" name="groupId" class="btn btn-default" />
+        <input type="submit" value="Posts" class="btn btn-default" />
+    </form>
+    if (Model.Sub || Model.UserId == Model.Group.AdminId)
+    {
+        <form method="get" asp-controller="Post" asp-action="Create">
+            <input type="hidden" value="@Model.Group.Id" name="groupId" class="btn btn-default" />
+            <input type="submit" value="Create Post" class="btn btn-default" />
+        </form>
+    }
+    if (Model.UserId == Model.Group.AdminId)
+    {
+        <form asp-controller="Group" asp-action="Delete">
+            <input type="hidden" value="@Model.Group.Id" name="Id" class="btn btn-default" />
+            <input type="submit" value="Delete" class="btn btn-default" />
+        </form>
+    }
+    else if (Model.Sub)
+    {
+        <form method="post" asp-controller="Group" asp-action="Info">
+            <input type="hidden" value="@Model.Group.Id" name="Id" class="btn btn-default" />
+            <input type="hidden" value="false" name="sub" class="btn btn-default" />
+            <input type="hidden" value="@Model.UserId" name="userId" class="btn btn-default" />
+            <input type="submit" value="Unsubscribe" class="btn btn-default" />
+        </form>
+    }
+    else
+    {
+        <form method="post" asp-controller="Group" asp-action="Info">
+            <input type="hidden" value="@Model.Group.Id" name="Id" class="btn btn-default" />
+            <input type="hidden" value="True" name="sub" class="btn btn-default" />
+            <input type="hidden" value="@Model.UserId" name="userId" class="btn btn-default" />
+            <input type="submit" value="Subscribe" class="btn btn-default" />
+        </form>
+    }
+
+}
+

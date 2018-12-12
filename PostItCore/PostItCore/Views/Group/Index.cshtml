@@ -1,0 +1,67 @@
+﻿@model PostItCore.ViewModels.GroupIndex
+<h2>@ViewData["Title"]</h2>
+@if (Convert.ToInt32(ViewData["Pages"]) != 0 && Model.UserId != "0")
+{
+    if (Model.Page == 0)
+    {
+        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page + 1)">Next</a>
+    }
+    else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+    {
+        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous</a>
+    }
+    else
+    {
+        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous    </a>
+        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page + 1)">Next</a>
+    }
+    <hr />
+}
+else if (Convert.ToInt32(ViewData["Pages"]) != 0)
+{
+    if (Model.Page == 0)
+    {
+        <a href="~/Group/Index?page=@(Model.Page + 1)">Next</a>
+    }
+    else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+    {
+        <a href="~/Group/Index?page=@(Model.Page - 1)">Previous</a>
+    }
+    else
+    {
+        <a href="~/Group/Index?page=@(Model.Page - 1)">Previous</a><br />
+        <a href="~/Group/Index?page=@(Model.Page + 1)">Next</a>
+    }
+}
+@if (User.Identity.IsAuthenticated && Model.UserId == "0")
+{
+        <form method="get" asp-controller="Group" asp-action="Create">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </form>
+}
+<form asp-controller="Group" asp-action="Index">
+    <input type="text" name="filter" value="" />
+    <button type="submit">
+        Submit
+    </button>
+</form>
+
+<table class="table">
+    <tr><th>Nick</th><th>Reputation</th><th></th></tr>
+    @foreach (var group in Model.Groups)
+    {
+        <tr>
+            <td>@group.Title</td>
+            <td>@group.Rep</td>
+            <td>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form method="get" action="~/Group/Info?GroupId=@group.Id">
+                        <input type="hidden" value="@group.Id" name="Id" class="btn btn-default" />
+                        <input type="submit" value="Info" class="btn btn-default" />
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+</table>

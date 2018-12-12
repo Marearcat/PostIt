@@ -67,7 +67,7 @@ namespace PostItCore.Controllers
                 model.GroupName = "Global";
             else
                 model.GroupName = context.Groups
-                                        .Where(x => x.Id == model.Id)
+                                        .Where(x => x.Id == model.GroupId)
                                         .First()
                                         .Title;
             model.UserId = post.UserId;

@@ -1,0 +1,21 @@
+﻿@model PostItCore.Models.Group
+@{
+    ViewData["Title"] = "Group create";
+}
+
+<h2>Create group</h2>
+
+<form method="post" asp-action="Create" asp-controller="Group">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Title" class="control-label">Title</label>
+        <input type="text" asp-for="Title" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Desc" class="control-label">Description</label>
+        <input type="text" asp-for="Desc" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Сохранить" class="btn btn-default" />
+    </div>
+</form>

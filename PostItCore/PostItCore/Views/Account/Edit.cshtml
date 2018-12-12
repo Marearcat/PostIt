@@ -6,11 +6,11 @@
 <form asp-action="Edit" asp-controller="Account">
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
-        <input type="hidden" asp-for="Id" />
+        <input required type="hidden" asp-for="Id" />
     </div>
     <div class="form-group">
         <label asp-for="Nick" class="control-label">Nick</label>
-        <input type="text" asp-for="Nick" class="form-control" />
+        <input required type="text" asp-for="Nick" class="form-control" />
     </div>
     <div class="form-group">
         <input type="submit" value="Сохранить" class="btn btn-default" />

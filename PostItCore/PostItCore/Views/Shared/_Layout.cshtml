@@ -30,7 +30,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Groups" asp-action="Groups">Groups</a></li>
+                    <li><a asp-area="" asp-controller="Group" asp-action="Index">Groups</a></li>
                     <li><a asp-area="" asp-controller="Users" asp-action="Index">Users</a></li>
                     @if (User.Identity.IsAuthenticated)
                     {
@@ -40,7 +40,7 @@
                         <li><a asp-area="" asp-controller="Account" asp-action="Info"> @User.Identity.Name</a></li>
                         <li>
                             <form method="post" asp-controller="Account" asp-action="LogOff">
-                                <input type="submit" value="Выход" />
+                                <input type="submit" value="Выход" class="btn btn-danger" />
                             </form>
                         </li>
                     }
