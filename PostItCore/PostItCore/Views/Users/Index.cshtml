@@ -21,6 +21,7 @@
         <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page - 1)">Previous    </a>
         <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
     }
+    <hr />
 }
 else if (Convert.ToInt32(ViewData["Pages"]) != 0)
 {
@@ -39,6 +40,13 @@ else if (Convert.ToInt32(ViewData["Pages"]) != 0)
     }
 }
 
+        <form asp-controller="Users" asp-action="Index">
+            <input type="text" name="filter" value="" />
+            <button type="submit">
+                Submit
+            </button>
+        </form>
+
 <table class="table">
     <tr><th>Nick</th><th>Reputation</th><th></th></tr>
     @foreach (var user in Model.Users)
@@ -47,12 +55,15 @@ else if (Convert.ToInt32(ViewData["Pages"]) != 0)
             <td>@user.Nick</td>
             <td>@user.Rep</td>
             <td>
-                <form asp-controller="Users" asp-action="Info" asp-route-id="@user.Id">
-                    <a class="btn btn-sm btn-primary" asp-controller="Users" asp-action="Type" asp-route-id="@user.Id">Message</a>
-                    <button type="submit" class="btn btn-sm btn-danger">
-                        Info
-                    </button>
-                </form>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-controller="Users" asp-action="Info" asp-route-id="@user.Id">
+                        <a class="btn btn-sm btn-primary" asp-controller="Users" asp-action="Type" asp-route-id="@user.Id">Message</a>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Info
+                        </button>
+                    </form>
+                }
             </td>
         </tr>
     }

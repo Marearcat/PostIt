@@ -22,7 +22,7 @@ namespace PostItCore.Controllers
                 _userManager = userManager;
         }
 
-        public IActionResult Index(int page = 0, int groupId = 0)
+        public IActionResult Index(int page = 0, int groupId = 0, string filter = null)
         {
             ViewData["Title"] = "Users";
             var context = new PostItDb(Opts());
@@ -32,6 +32,14 @@ namespace PostItCore.Controllers
                 ViewData["Title"] = context.Groups.First(x => x.Id == groupId).Title;
                 users = users.Where(x => context.Subscribes.Any(y => y.UserId == x.Id && y.GroupId == groupId)).ToList();
             }
+            var model = new ViewModels.UsersIndex
+            {
+                Users = users,
+                Page = page,
+                GroupId = groupId
+            };
+            if (filter != null)
+                model.Users = model.Users.Where(x => x.Nick.ToLower().Contains(filter.ToLower())).ToList();
             if (users != null && users.Count > 10)
             {
                 ViewData["Pages"] = users.Count % 10 == 0 ? users.Count / 10 : users.Count / 10 + 1;
@@ -40,12 +48,6 @@ namespace PostItCore.Controllers
                 else
                     users = users.GetRange(page * 10, users.Count - page * 10);
             }
-            var model = new ViewModels.UsersIndex
-            {
-                Users = users,
-                Page = page,
-                GroupId = groupId
-            };
             return View(model);
         }
 
@@ -78,7 +80,7 @@ namespace PostItCore.Controllers
                 model.Add(new ViewModels.Mail { DepId = msg.DepId, Page = page, Text = msg.Text, DepName = user.Nick });
             }
             if (filter != null)
-                model = model.Where(x => x.DepName.Contains(filter) || x.Text.Contains(filter)).ToList();
+                model = model.Where(x => x.DepName.ToLower().Contains(filter.ToLower()) || x.Text.ToLower().Contains(filter.ToLower())).ToList();
             if (sms != null && sms.Count > 10)
             {
                 ViewData["Pages"] = sms.Count % 10 == 0 ? sms.Count / 10 : sms.Count / 10 + 1;
