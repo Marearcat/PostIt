@@ -1,8 +1,19 @@
 ﻿@model PostItCore.ViewModels.PostIndex
 @{
-    ViewData["Title"] = "Global";
+    ViewData["Title"] = "Posts";
 }
-<h2>Global</h2>
+@if(Model.UserId != "0")
+{
+    <a href="~/Users/Info?Id=@Model.UserId"></a><h2>User's posts</h2>
+}
+else if(Model.GroupId != 0)
+{
+    <a href="~/Group/Info?Id=@Model.GroupId"><h2>Group's posts</h2></a>
+}
+else
+{
+    <h2>Global</h2>
+}
 @if (Convert.ToInt32(ViewData["Pages"]) != 0)
 {
     if (Model.Page == 0)

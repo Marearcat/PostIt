@@ -22,10 +22,18 @@ namespace PostItCore.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index(int page = 0)
+        public IActionResult Index(int page = 0, string userId = "0", int groupId = 0)
         {
             var context = new PostItDb(Opts());
             var posts = context.Posts.OrderByDescending(x => x.Date).ToList();
+            if(userId != "0")
+            {
+                posts = posts.Where(x => x.UserId == userId).ToList();
+            }
+            if(groupId != 0)
+            {
+                posts = posts.Where(x => x.GroupId == groupId).ToList();
+            }
             if (posts != null && posts.Count > 10)
             {
                 ViewData["Pages"] = posts.Count % 10 == 0 ? posts.Count / 10 : posts.Count / 10 + 1;
@@ -37,6 +45,8 @@ namespace PostItCore.Controllers
             var model = new ViewModels.PostIndex
             {
                 Posts = posts,
+                UserId = userId,
+                GroupId = groupId,
                 Page = page
             };
             return View(model);

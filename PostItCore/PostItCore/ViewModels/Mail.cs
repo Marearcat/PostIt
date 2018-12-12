@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace PostItCore.ViewModels
 {
-    public class PostIndex
+    public class Mail
     {
+        public string Text { get; set; }
         public int Page { get; set; }
-        public string UserId { get; set; }
-        public int GroupId { get; set; }
-        public List<Models.Post> Posts { get; set; }
+        public string DepId { get; set; }
+        public string DepName { get; set; }
     }
 }

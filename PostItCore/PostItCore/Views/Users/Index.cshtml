@@ -1,0 +1,59 @@
+﻿@model PostItCore.ViewModels.UsersIndex
+
+<h2>@ViewData["Title"]</h2>
+@if (ViewData["Title"].ToString() != "Users")
+{
+    <hr />
+    <a href="~/Group/Info?Id=@Model.GroupId">Back to group</a>
+}
+@if (Convert.ToInt32(ViewData["Pages"]) != 0 && Model.GroupId != 0)
+{
+    if (Model.Page == 0)
+    {
+        <a href="~/Users/Index?groupId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
+    }
+    else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+    {
+        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page - 1)">Previous</a>
+    }
+    else
+    {
+        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page - 1)">Previous    </a>
+        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
+    }
+}
+else if (Convert.ToInt32(ViewData["Pages"]) != 0)
+{
+    if (Model.Page == 0)
+    {
+        <a href="~/Users/Index?page=@(Model.Page + 1)">Next</a>
+    }
+    else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+    {
+        <a href="~/Users/Index?page=@(Model.Page - 1)">Previous</a>
+    }
+    else
+    {
+        <a href="~/Users/Index?page=@(Model.Page - 1)">Previous    </a>
+        <a href="~/Users/Index?page=@(Model.Page + 1)">Next</a>
+    }
+}
+
+<table class="table">
+    <tr><th>Nick</th><th>Reputation</th><th></th></tr>
+    @foreach (var user in Model.Users)
+    {
+        <tr>
+            <td>@user.Nick</td>
+            <td>@user.Rep</td>
+            <td>
+                <form asp-controller="Users" asp-action="Info" asp-route-id="@user.Id">
+                    <a class="btn btn-sm btn-primary" asp-controller="Users" asp-action="Type" asp-route-id="@user.Id">Message</a>
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        Info
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+</table>

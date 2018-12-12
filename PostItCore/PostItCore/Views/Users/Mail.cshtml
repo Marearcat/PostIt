@@ -1,0 +1,37 @@
+﻿@model List<PostItCore.ViewModels.Mail>
+@{
+    ViewData["Title"] = "Mail";
+}
+
+<h2>Mail</h2>
+@if (Convert.ToInt32(ViewData["Pages"]) != 0)
+{
+    if (Model.First().Page == 0)
+    {
+<a href="~/Users/Index?page=@(Model.First().Page + 1)">Next</a>
+    }
+    else if (Model.First().Page == Convert.ToInt32(ViewData["Pages"]))
+    {
+<a href="~/Users/Index?page=@(Model.First().Page - 1)">Previous</a>
+    }
+    else
+    {
+<a href="~/Users/Index?page=@(Model.First().Page - 1)">Previous    </a>
+<a href="~/Users/Index?page=@(Model.First().Page + 1)">Next</a>
+    }
+}
+
+
+<table class="table">
+    <tr><th>Nick</th><th>Text</th><th></th></tr>
+    @foreach (var sms in Model)
+    {
+        <tr>
+            <td><a href="~/User/Info?Id=@sms.DepId">@sms.DepName</a></td>
+            <td>@sms.Text</td>
+            <td>
+                    <a class="btn btn-sm btn-primary" asp-controller="Users" asp-action="Type" asp-route-id="@sms.DepId">Reply</a>
+            </td>
+        </tr>
+    }
+</table>

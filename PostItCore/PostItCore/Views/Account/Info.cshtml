@@ -4,7 +4,7 @@
 } 
 @model PostItCore.ViewModels.AccountInfo
 <h2>Info</h2><hr />
-<a href="~/Users/Posts?userId=@Model.Id">Posts</a>
+<a href="~/Post/Index?userId=@Model.Id">Posts</a>
 <form method="get" asp-controller="Post" asp-action="Create">
     <input type="submit" value="Create new" />
 </form>
