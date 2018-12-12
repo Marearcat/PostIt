@@ -20,16 +20,19 @@ namespace PostItCore.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(int page = 0, string userId = "0", string filter = null)
+        public async Task<IActionResult> Index(int page = 0, string userName = "0", string filter = null)
         {
             ViewData["Title"] = "Groups";
             var context = new PostItDb(Opts());
             var groups = context.Groups.OrderByDescending(x => x.Rep).ToList();
-            if (userId != "0")
+            var user = new Models.User();
+            string userId = "0";
+            if (userName != "0")
             {
-                var user = await _userManager.FindByIdAsync(userId);
+                user = await _userManager.FindByEmailAsync(userName);
+                userId = user.Id;
                 ViewData["Title"] = user.Nick;
-                groups = groups.Where(x => context.Subscribes.Any(y => y.UserId == userId && y.GroupId == x.Id)).ToList();
+                groups = groups.Where(x => context.Subscribes.Any(y => y.UserId == user.Id && y.GroupId == x.Id) || x.AdminId == user.Id).ToList();
             }
             var model = new ViewModels.GroupIndex
             {
@@ -54,16 +57,20 @@ namespace PostItCore.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Group model)
         {
-            var context = new PostItDb(Opts());
-            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
-            context.Groups.Add(new Group
+
+            if (model.Title != null && model.Desc != null)
             {
-                Title = model.Title,
-                AdminId = user.Id,
-                Desc = model.Desc,
-                Rep = 0
-            });
-            await context.SaveChangesAsync();
+                var context = new PostItDb(Opts());
+                var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+                context.Groups.Add(new Group
+                {
+                    Title = model.Title,
+                    AdminId = user.Id,
+                    Desc = model.Desc,
+                    Rep = 0
+                });
+                await context.SaveChangesAsync();
+            }
             return RedirectToAction("Index");
         }
 
@@ -88,13 +95,16 @@ namespace PostItCore.Controllers
         [HttpPost]
         public IActionResult Info(int Id, bool sub, string userId)
         {
-            var context = new PostItDb(Opts());
-            if (sub)
-                context.Subscribes.Add(new Subscribe { UserId = userId, GroupId = Id });
-            else
-                context.Subscribes.Remove(context.Subscribes.First(x => x.GroupId == Id && x.UserId == userId));
-            context.SaveChangesAsync();
-            return RedirectPermanent(@"~/Post/Index?groupId=" + Id);
+            if (userId != null && Id != 0)
+            {
+                var context = new PostItDb(Opts());
+                if (sub)
+                    context.Subscribes.Add(new Subscribe { UserId = userId, GroupId = Id });
+                else
+                    context.Subscribes.Remove(context.Subscribes.First(x => x.GroupId == Id && x.UserId == userId));
+                context.SaveChangesAsync();
+            }
+            return RedirectPermanent(@"~/Group/Info?Id=" + Id);
         }
 
 

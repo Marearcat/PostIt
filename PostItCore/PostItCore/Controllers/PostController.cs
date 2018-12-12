@@ -24,13 +24,14 @@ namespace PostItCore.Controllers
 
         public IActionResult Index(int page = 0, string userId = "0", int groupId = 0)
         {
+            ViewData["Title"] = "Posts";
             var context = new PostItDb(Opts());
             var posts = context.Posts.OrderByDescending(x => x.Date).ToList();
             if(userId != "0")
             {
                 posts = posts.Where(x => x.UserId == userId).ToList();
             }
-            if(groupId != 0)
+            else if(groupId != 0)
             {
                 posts = posts.Where(x => x.GroupId == groupId).ToList();
             }
@@ -84,26 +85,29 @@ namespace PostItCore.Controllers
         [HttpPost]
         public async Task<IActionResult> Info(int postId, bool favor, string userId)
         {
-            var context = new PostItDb(Opts());
-            var groupId = context.Posts.Where(x => x.Id == postId).First().GroupId;
-            var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-            if (favor)
+            if (userId != null && postId != 0)
             {
-                context.Favors.Add(new Favor { UserId = currentUser.Id, PostId = postId, IsPost = true });
-                context.Users.Where(x => x.Id == userId).First().Rep++;
-                context.Posts.Where(x => x.Id == postId).First().Rep++;
-                if (groupId != 0)
-                    context.Groups.Where(x => x.Id == groupId).First().Rep++;
-                await context.SaveChangesAsync();
-            }
-            else
-            {
-                context.Favors.Remove(context.Favors.Where(x=> x.PostId == postId && x.UserId == currentUser.Id && x.IsPost).First());
-                context.Users.Where(x => x.Id == userId).First().Rep--;
-                context.Posts.Where(x => x.Id == postId).First().Rep--;
-                if (groupId != 0)
-                    context.Groups.Where(x => x.Id == groupId).First().Rep--;
-                await context.SaveChangesAsync();
+                var context = new PostItDb(Opts());
+                var groupId = context.Posts.Where(x => x.Id == postId).First().GroupId;
+                var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+                if (favor)
+                {
+                    context.Favors.Add(new Favor { UserId = currentUser.Id, PostId = postId, IsPost = true });
+                    context.Users.Where(x => x.Id == userId).First().Rep++;
+                    context.Posts.Where(x => x.Id == postId).First().Rep++;
+                    if (groupId != 0)
+                        context.Groups.Where(x => x.Id == groupId).First().Rep++;
+                    context.SaveChanges();
+                }
+                else
+                {
+                    context.Favors.Remove(context.Favors.Where(x => x.PostId == postId && x.UserId == currentUser.Id && x.IsPost).First());
+                    context.Users.Where(x => x.Id == userId).First().Rep--;
+                    context.Posts.Where(x => x.Id == postId).First().Rep--;
+                    if (groupId != 0)
+                        context.Groups.Where(x => x.Id == groupId).First().Rep--;
+                    context.SaveChanges();
+                }
             }
             return RedirectPermanent($"~/Post/Info?postId=" + postId);
         }
@@ -118,9 +122,12 @@ namespace PostItCore.Controllers
         [HttpPost]
         public IActionResult Create(Models.Post model)
         {
-            var context = new PostItDb(Opts());
-            context.Posts.Add(new Post { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, GroupId = model.GroupId, Head = model.Head, Rep = 0 });
-            context.SaveChanges();
+            if (model.UserId != null && model.Head != null && model.Desc != null)
+            {
+                var context = new PostItDb(Opts());
+                context.Posts.Add(new Post { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, GroupId = model.GroupId, Head = model.Head, Rep = 0 });
+                context.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
 
@@ -134,9 +141,12 @@ namespace PostItCore.Controllers
         [HttpPost]
         public IActionResult CommentCreate(ViewModels.CreateComment model)
         {
-            var context = new PostItDb(Opts());
-            context.Comments.Add(new Comment { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, PostId = model.PostId, Rep = 0 });
-            context.SaveChanges();
+            if (model.PostId != 0 && model.UserId != null && model.Desc != null)
+            {
+                var context = new PostItDb(Opts());
+                context.Comments.Add(new Comment { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, PostId = model.PostId, Rep = 0 });
+                context.SaveChanges();
+            }
             return RedirectPermanent(@"~/Post/Info?postId=" + model.PostId);
         }
         
@@ -166,21 +176,24 @@ namespace PostItCore.Controllers
         [HttpPost]
         public async Task<IActionResult> CommentIndex(int postId, int commentId, int page, bool favor, string userId)
         {
-            var context = new PostItDb(Opts());
-            var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-            if (favor)
+            if (postId != 0 && commentId != 0 && page >= 0 && userId != null)
             {
-                context.Favors.Add(new Favor { UserId = currentUser.Id, PostId = commentId, IsPost = false });
-                context.Users.Where(x => x.Id == userId).First().Rep++;
-                context.Comments.Where(x => x.Id == commentId).First().Rep++;
-                await context.SaveChangesAsync();
-            }
-            else
-            {
-                context.Favors.Remove(context.Favors.Where(x => x.PostId == commentId && x.UserId == currentUser.Id && !x.IsPost).First());
-                context.Users.Where(x => x.Id == userId).First().Rep--;
-                context.Comments.Where(x => x.Id == commentId).First().Rep--;
-                await context.SaveChangesAsync();
+                var context = new PostItDb(Opts());
+                var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+                if (favor)
+                {
+                    context.Favors.Add(new Favor { UserId = currentUser.Id, PostId = commentId, IsPost = false });
+                    context.Users.Where(x => x.Id == userId).First().Rep++;
+                    context.Comments.Where(x => x.Id == commentId).First().Rep++;
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    context.Favors.Remove(context.Favors.Where(x => x.PostId == commentId && x.UserId == currentUser.Id && !x.IsPost).First());
+                    context.Users.Where(x => x.Id == userId).First().Rep--;
+                    context.Comments.Where(x => x.Id == commentId).First().Rep--;
+                    await context.SaveChangesAsync();
+                }
             }
             return RedirectPermanent(@"~/Post/CommentIndex?postId=" + postId + @"&page=" + page);
         }
@@ -202,6 +215,31 @@ namespace PostItCore.Controllers
             context.Comments.Remove(comment);
             context.SaveChangesAsync();
             return RedirectPermanent(@"~/Post/CommentIndex?postId=" + postId);
+        }
+
+        public async Task<IActionResult> Features(int page = 0, string userName = "0")
+        {
+            ViewData["Title"] = "Features";
+            var context = new PostItDb(Opts());
+            var posts = context.Posts.OrderByDescending(x => x.Date).ToList();
+            var user = await _userManager.FindByEmailAsync(userName);
+            posts = posts.Where(x => context.Favors.Any(y => y.IsPost && y.PostId == x.Id && y.UserId == user.Id)).ToList();
+            if (posts != null && posts.Count > 10)
+            {
+                ViewData["Pages"] = posts.Count % 10 == 0 ? posts.Count / 10 : posts.Count / 10 + 1;
+                if (posts.Count - page * 10 >= 9)
+                    posts = posts.GetRange(page * 10, 10);
+                else
+                    posts = posts.GetRange(page * 10, posts.Count - page * 10);
+            }
+            var model = new ViewModels.PostIndex
+            {
+                Posts = posts,
+                UserId = user.Id,
+                GroupId = 0,
+                Page = page
+            };
+            return View("Index", model);
         }
 
         public static DbContextOptions<PostItDb> Opts()

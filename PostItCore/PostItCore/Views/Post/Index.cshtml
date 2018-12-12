@@ -1,40 +1,81 @@
 ﻿@model PostItCore.ViewModels.PostIndex
-@{
-    ViewData["Title"] = "Posts";
-}
-@if(Model.UserId != "0")
+
+@if (Model.UserId != "0")
 {
-    <a href="~/Users/Info?Id=@Model.UserId"></a><h2>User's posts</h2>
-}
-else if(Model.GroupId != 0)
-{
-    <a href="~/Group/Info?Id=@Model.GroupId"><h2>Group's posts</h2></a>
-}
-else
-{
-    <h2>Global</h2>
-}
-@if (Convert.ToInt32(ViewData["Pages"]) != 0)
-{
-    if (Model.Page == 0)
+    @if (ViewData["Title"].ToString() != "Features")
     {
-        <a href="~/Post/Index?postId=@Model.Posts.First().Id&page=@(Model.Page + 1)">Next</a>
-    }
-    else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
-    {
-        <a href="~/Post/CommentIndex?postId=@Model.Posts.First().Id&page=@(Model.Page - 1)">Previous</a>
+        <a href="~/Users/Info?Id=@Model.UserId">
+            <h2>User's posts</h2>
+        </a>
+
     }
     else
     {
-        <a href="~/Post/CommentIndex?postId=@Model.Posts.First().Id&page=@(Model.Page - 1)">Previous    </a>
-        <a href="~/Post/CommentIndex?postId=@Model.Posts.First().Id&page=@(Model.Page + 1)">Next</a>
+        <h2>Features</h2>
     }
 }
-@if (Model != null)
-{
-    foreach (var post in Model.Posts)
+    else if (Model.GroupId != 0)
     {
-        <hr />
-        <a href="~/Post/Info?postId=@post.Id">@post.Head</a>
+    <a href="~/Group/Info?Id=@Model.GroupId"><h2>Group's posts</h2></a>
     }
-}
+    else
+    {
+    <h2>Global</h2>
+    }
+    @if (Convert.ToInt32(ViewData["Pages"]) != 0 && Model.GroupId != 0)
+    {
+        if (Model.Page == 0)
+        {
+            <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
+        }
+        else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+        {
+            <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page - 1)">Previous</a>
+        }
+        else
+        {
+            <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page - 1)">Previous    </a>
+            <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
+        }
+    }
+    else if (Convert.ToInt32(ViewData["Pages"]) != 0 && Model.UserId != "0")
+    {
+        if (Model.Page == 0)
+        {
+            <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page + 1)">Next</a>
+        }
+        else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+        {
+            <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous</a>
+        }
+        else
+        {
+            <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous    </a>
+            <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page + 1)">Next</a>
+        }
+    }
+    else if (Convert.ToInt32(ViewData["Pages"]) != 0)
+    {
+        if (Model.Page == 0)
+        {
+            <a href="~/Post/Index?page=@(Model.Page + 1)">Next</a>
+        }
+        else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+        {
+            <a href="~/Post/Index?page=@(Model.Page - 1)">Previous</a>
+        }
+        else
+        {
+            <a href="~/Post/Index?page=@(Model.Page - 1)">Previous    </a>
+            <a href="~/Post/Index?page=@(Model.Page + 1)">Next</a>
+        }
+    }
+
+    @if (Model != null)
+    {
+        foreach (var post in Model.Posts)
+        {
+            <hr />
+            <a href="~/Post/Info?postId=@post.Id">@post.Head</a>
+        }
+    }

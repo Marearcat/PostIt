@@ -40,12 +40,14 @@ else if (Convert.ToInt32(ViewData["Pages"]) != 0)
         </form>
 }
 <form asp-controller="Group" asp-action="Index">
+    <input type="hidden" name="userName" value="@User.Identity.Name" />
     <input type="text" name="filter" value="" />
     <button type="submit">
         Submit
     </button>
 </form>
-
+@if (Model.Groups != null)
+{
 <table class="table">
     <tr><th>Nick</th><th>Reputation</th><th></th></tr>
     @foreach (var group in Model.Groups)
@@ -65,3 +67,4 @@ else if (Convert.ToInt32(ViewData["Pages"]) != 0)
         </tr>
     }
 </table>
+}

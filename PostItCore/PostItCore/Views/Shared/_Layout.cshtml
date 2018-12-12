@@ -34,10 +34,22 @@
                     <li><a asp-area="" asp-controller="Users" asp-action="Index">Users</a></li>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li><a asp-area="" asp-controller="Account" asp-action="Subscribes">Subscribes</a></li>
+                        <li><a asp-area="" asp-controller="Group" asp-action="Index" name="userName">Subscribes</a></li>
                         <li><a asp-area="" asp-controller="Account" asp-action="Favorites">Favorites</a></li>
                         <li><a asp-area="" asp-controller="Users" asp-action="Mail">Mail</a></li>
                         <li><a asp-area="" asp-controller="Account" asp-action="Info"> @User.Identity.Name</a></li>
+                        <li>
+                            <form asp-controller="Post" asp-action="Features">
+                                <input type="hidden" name="userName" value="@User.Identity.Name" />
+                                <input type="submit" value="Favorites" class="btn btn-group" />
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-controller="Group" asp-action="Index">
+                                <input type="hidden" name="userName" value="@User.Identity.Name" />
+                                <input type="submit" value="Subscribes" class="btn btn-group" />
+                            </form>
+                        </li>
                         <li>
                             <form method="post" asp-controller="Account" asp-action="LogOff">
                                 <input type="submit" value="Выход" class="btn btn-danger" />
