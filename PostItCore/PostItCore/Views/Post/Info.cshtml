@@ -8,8 +8,14 @@
 <hr />
 @if (User.Identity.IsAuthenticated)
 {
-
-    if (!Model.Favor)
+    if (Model.CurrentId == Model.UserId)
+    {
+        <form asp-controller="Post" asp-action="Delete">
+            <input type="hidden" value="@Model.Id" name="Id" class="btn btn-default" />
+            <input type="submit" value="Delete" class="btn btn-default" />
+        </form>
+    }
+    else if (!Model.Favor)
     {
         <form method="post" action="~/Post/Info?postId=@Model.Id&favor=true&userId=@Model.UserId">
             <input type="submit" value="Respect" class="btn btn-default" />
@@ -32,13 +38,17 @@
 <hr />
 @if (User.Identity.IsAuthenticated)
 {
-    <form method="get" action="~/Post/CommentCreate?postId=@Model.Id">
-        <input type="hidden" value="@Model.Id" name="postId" class="btn btn-default" />
-        <input type="submit" value="Comment" class="btn btn-default" />
-    </form>
-    <hr />
-    <form method="get" action="~/Post/CommentIndex?postId=@Model.Id">
-        <input type="hidden" value="@Model.Id" name="postId" class="btn btn-default" />
-        <input type="submit" value="Comment List" class="btn btn-default" />
-    </form>
+
+    
+        <form method="get" action="~/Post/CommentCreate?postId=@Model.Id">
+            <input type="hidden" value="@Model.Id" name="postId" class="btn btn-default" />
+            <input type="submit" value="Comment" class="btn btn-default" />
+        </form>
+        <hr />
+        <form method="get" action="~/Post/CommentIndex?postId=@Model.Id">
+            <input type="hidden" value="@Model.Id" name="postId" class="btn btn-default" />
+            <input type="submit" value="Comment List" class="btn btn-default" />
+        </form>
+    
+
 }

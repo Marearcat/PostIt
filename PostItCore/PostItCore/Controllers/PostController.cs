@@ -77,6 +77,7 @@ namespace PostItCore.Controllers
             {
                 var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
                 model.Favor = context.Favors.Any(x => x.UserId == currentUser.Id && x.PostId == postId && x.IsPost);
+                model.CurrentId = currentUser.Id;
             }
             return View(model);
         }
@@ -153,6 +154,7 @@ namespace PostItCore.Controllers
             }
             List<ViewModels.CommentsInfo> model = new List<ViewModels.CommentsInfo>();
             var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
+            ViewData["currentId"] = currentUser.Id;
             foreach(var comment in comments)
             {
                 var user = await _userManager.FindByIdAsync(comment.UserId);
@@ -181,6 +183,25 @@ namespace PostItCore.Controllers
                 await context.SaveChangesAsync();
             }
             return RedirectPermanent(@"~/Post/CommentIndex?postId=" + postId + @"&page=" + page);
+        }
+
+        public IActionResult Delete(int Id)
+        {
+            var context = new PostItDb(Opts());
+            context.Comments.RemoveRange(context.Comments.Where(x => x.PostId == Id));
+            context.Posts.Remove(context.Posts.First(x => x.Id == Id));
+            context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult CommentDelete(int commentId)
+        {
+            var context = new PostItDb(Opts());
+            var comment = context.Comments.First(x => x.Id == commentId);
+            int postId = comment.PostId;
+            context.Comments.Remove(comment);
+            context.SaveChangesAsync();
+            return RedirectPermanent(@"~/Post/CommentIndex?postId=" + postId);
         }
 
         public static DbContextOptions<PostItDb> Opts()
