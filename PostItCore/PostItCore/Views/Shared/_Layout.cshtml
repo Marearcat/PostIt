@@ -34,10 +34,16 @@
                     <li><a asp-area="" asp-controller="Users" asp-action="Index">Users</a></li>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li><a asp-area="" asp-controller="Group" asp-action="Index" name="userName">Subscribes</a></li>
-                        <li><a asp-area="" asp-controller="Account" asp-action="Favorites">Favorites</a></li>
-                        <li><a asp-area="" asp-controller="Users" asp-action="Mail">Mail</a></li>
-                        <li><a asp-area="" asp-controller="Account" asp-action="Info"> @User.Identity.Name</a></li>
+                        <li>
+                            <form asp-controller="Account" asp-action="Info">
+                                <input type="submit" value="@User.Identity.Name" class="btn btn-block" />
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-controller="Users" asp-action="Mail">
+                                <input type="submit" value="Mail" class="btn btn-group" />
+                            </form>
+                        </li>
                         <li>
                             <form asp-controller="Post" asp-action="Features">
                                 <input type="hidden" name="userName" value="@User.Identity.Name" />
@@ -58,8 +64,16 @@
                     }
                     else
                     {
-                        <li><a asp-controller="Account" asp-action="Login">Вход</a></li>
-                        <li><a asp-controller="Account" asp-action="Register">Регистрация</a></li>
+                        <li>
+                            <form method="get" asp-controller="Account" asp-action="Login">
+                                <input type="submit" value="Вход" class="btn btn-success" />
+                            </form>
+                        </li>
+                        <li>
+                            <form method="get" asp-controller="Account" asp-action="Register">
+                                <input type="submit" value="Регистрация" class="btn btn-warning" />
+                            </form>
+                        </li>
                     }
                 </ul>
             </div>
