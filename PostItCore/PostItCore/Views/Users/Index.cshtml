@@ -10,16 +10,16 @@
 {
     if (Model.Page == 0)
     {
-        <a href="~/Users/Index?groupId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
+        <a href="~/Users/Index?groupId=@Model.GroupId&page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
     else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
     {
-        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page - 1)">Previous</a>
+        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page - 1)&filter=@ViewData["Filter"]">Previous</a>
     }
     else
     {
-        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page - 1)">Previous    </a>
-        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
+        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page - 1)&filter=@ViewData["Filter"]">Previous</a><br />
+        <a href="~/Users/Index?postId=@Model.GroupId&page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
     <hr />
 }
@@ -27,16 +27,16 @@ else if (Convert.ToInt32(ViewData["Pages"]) != 0)
 {
     if (Model.Page == 0)
     {
-        <a href="~/Users/Index?page=@(Model.Page + 1)">Next</a>
+        <a href="~/Users/Index?page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
     else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
     {
-        <a href="~/Users/Index?page=@(Model.Page - 1)">Previous</a>
+        <a href="~/Users/Index?page=@(Model.Page - 1)&filter=@ViewData["Filter"]">Previous</a>
     }
     else
     {
-        <a href="~/Users/Index?page=@(Model.Page - 1)">Previous    </a>
-        <a href="~/Users/Index?page=@(Model.Page + 1)">Next</a>
+        <a href="~/Users/Index?page=@(Model.Page - 1)&filter=@ViewData["Filter"]">Previous</a><br />
+        <a href="~/Users/Index?page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
 }
 

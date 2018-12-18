@@ -22,7 +22,7 @@ namespace PostItCore.Controllers
                 _userManager = userManager;
         }
 
-        public IActionResult Index(int page = 0, int groupId = 0, string filter = null)
+        public IActionResult Index(int page = 0, int groupId = 0, string filter = "")
         {
             ViewData["Title"] = "Users";
             var context = new PostItDb(Opts());
@@ -38,8 +38,9 @@ namespace PostItCore.Controllers
                 Page = page,
                 GroupId = groupId
             };
-            if (filter != null)
-                model.Users = model.Users.Where(x => x.Nick.ToLower().Contains(filter.ToLower())).ToList();
+            model.Users = model.Users.Where(x => x.Nick.ToLower().Contains(filter.ToLower())).ToList();
+            ViewData["Filter"] = filter;
+            
             if (users != null && users.Count > 10)
             {
                 ViewData["Pages"] = users.Count % 10 == 0 ? users.Count / 10 : users.Count / 10 + 1;
