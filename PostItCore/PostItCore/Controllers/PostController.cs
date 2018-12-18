@@ -201,7 +201,14 @@ namespace PostItCore.Controllers
         public IActionResult Delete(int Id)
         {
             var context = new PostItDb(Opts());
-            context.Comments.RemoveRange(context.Comments.Where(x => x.PostId == Id));
+            //context.Comments.RemoveRange(context.Comments.Where(x => x.PostId == Id));
+            var comments = context.Comments.Where(x => x.PostId == Id);
+            foreach(var comment in comments)
+            {
+                context.Favors.RemoveRange(context.Favors.Where(x => x.PostId == comment.Id && !x.IsPost));
+                context.Comments.Remove(comment);
+            }
+            context.Favors.RemoveRange(context.Favors.Where(x => x.PostId == Id && x.IsPost));
             context.Posts.Remove(context.Posts.First(x => x.Id == Id));
             context.SaveChangesAsync();
             return RedirectToAction("Index");
@@ -213,6 +220,7 @@ namespace PostItCore.Controllers
             var comment = context.Comments.First(x => x.Id == commentId);
             int postId = comment.PostId;
             context.Comments.Remove(comment);
+            context.Favors.RemoveRange(context.Favors.Where(x => x.PostId == commentId && !x.IsPost));
             context.SaveChangesAsync();
             return RedirectPermanent(@"~/Post/CommentIndex?postId=" + postId);
         }

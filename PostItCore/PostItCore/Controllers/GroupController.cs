@@ -111,8 +111,20 @@ namespace PostItCore.Controllers
         public IActionResult Delete(int Id)
         {
             var context = new PostItDb(Opts());
+            var posts = context.Posts.Where(x => x.GroupId == Id);
+            foreach(var post in posts)
+            {
+                var comments = context.Comments.Where(x => x.PostId == post.Id);
+                foreach (var comment in comments)
+                {
+                    context.Favors.RemoveRange(context.Favors.Where(x => x.PostId == comment.Id && !x.IsPost));
+                    context.Comments.Remove(comment);
+                }
+                context.Favors.RemoveRange(context.Favors.Where(x => x.PostId == post.Id && x.IsPost));
+                context.Posts.Remove(context.Posts.First(x => x.Id == post.Id));
+            }
             context.Subscribes.RemoveRange(context.Subscribes.Where(x => x.GroupId == Id));
-            context.Posts.RemoveRange(context.Posts.Where(x => x.GroupId == Id));
+            //context.Posts.RemoveRange(context.Posts.Where(x => x.GroupId == Id));
             context.Groups.Remove(context.Groups.First(x => x.Id == Id));
             context.SaveChangesAsync();
             return RedirectToAction("Index");

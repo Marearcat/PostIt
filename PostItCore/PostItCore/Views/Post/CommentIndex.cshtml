@@ -27,7 +27,7 @@
     @foreach (var comment in Model)
     {
         <hr />
-        <a href="~/User/Info?Id=@comment.UserId"><h3>@comment.UserNick</h3></a>
+        <a href="~/Users/Info?Id=@comment.UserId"><h3>@comment.UserNick</h3></a>
         <p>@comment.Desc</p>
         <p>Reputation @comment.Rep</p>
         @if (User.Identity.IsAuthenticated)
