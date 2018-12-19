@@ -4,16 +4,16 @@
 {
     if (Model.Page == 0)
     {
-        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page + 1)">Next</a>
+        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
-    else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+    else if (Model.Page +1 == Convert.ToInt32(ViewData["Pages"]))
     {
-        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous</a>
+        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page - 1)&filter=@ViewData["Filter"]">Previous</a>
     }
     else
     {
-        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous    </a>
-        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page + 1)">Next</a>
+        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page - 1)&filter=@ViewData["Filter"]">Previous    </a>
+        <a href="~/Group/Index?userId=@Model.UserId&page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
     <hr />
 }
@@ -21,16 +21,16 @@ else if (Convert.ToInt32(ViewData["Pages"]) != 0)
 {
     if (Model.Page == 0)
     {
-        <a href="~/Group/Index?page=@(Model.Page + 1)">Next</a>
+        <a href="~/Group/Index?page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
-    else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+    else if (Model.Page + 1 == Convert.ToInt32(ViewData["Pages"]))
     {
-        <a href="~/Group/Index?page=@(Model.Page - 1)">Previous</a>
+        <a href="~/Group/Index?page=@(Model.Page - 1)&filter=@ViewData["Filter"]">Previous</a>
     }
     else
     {
-        <a href="~/Group/Index?page=@(Model.Page - 1)">Previous</a><br />
-        <a href="~/Group/Index?page=@(Model.Page + 1)">Next</a>
+        <a href="~/Group/Index?page=@(Model.Page - 1)&filter=@ViewData["Filter"]">Previous</a><br />
+        <a href="~/Group/Index?page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
 }
 @if (User.Identity.IsAuthenticated && Model.UserId == "0")

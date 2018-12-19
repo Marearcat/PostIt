@@ -14,7 +14,7 @@
         {
             <a href="~/Post/CommentIndex?postId=@Model.First().PostId&page=@(Model.First().Page + 1)">Next</a>
         }
-        else if (Model.First().Page == Convert.ToInt32(ViewData["Pages"]))
+        else if (Model.First().Page + 1 == Convert.ToInt32(ViewData["Pages"]))
         {
             <a href="~/Post/CommentIndex?postId=@Model.First().PostId&page=@(Model.First().Page - 1)">Previous</a>
         }

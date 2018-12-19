@@ -8,16 +8,16 @@
 {
     if (Model.First().Page == 0)
     {
-<a href="~/Users/Index?page=@(Model.First().Page + 1)">Next</a>
+<a href="~/Users/Index?page=@(Model.First().Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
-    else if (Model.First().Page == Convert.ToInt32(ViewData["Pages"]))
+    else if (Model.First().Page + 1 == Convert.ToInt32(ViewData["Pages"]))
     {
-<a href="~/Users/Index?page=@(Model.First().Page - 1)">Previous</a>
+<a href="~/Users/Index?page=@(Model.First().Page - 1)&filter=@ViewData["Filter"]">Previous</a>
     }
     else
     {
-<a href="~/Users/Index?page=@(Model.First().Page - 1)">Previous    </a>
-<a href="~/Users/Index?page=@(Model.First().Page + 1)">Next</a>
+<a href="~/Users/Index?page=@(Model.First().Page - 1)&filter=@ViewData["Filter"]">Previous    </a>
+<a href="~/Users/Index?page=@(Model.First().Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
 }
 

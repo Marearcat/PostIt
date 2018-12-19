@@ -243,11 +243,11 @@ namespace PostItCore.Controllers
             var model = new ViewModels.PostIndex
             {
                 Posts = posts,
-                UserId = user.Id,
+                UserId = "0",
                 GroupId = 0,
                 Page = page
             };
-            return View("Index", model);
+            return View(model);
         }
 
         public static DbContextOptions<PostItDb> Opts()

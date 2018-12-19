@@ -2,17 +2,10 @@
 
 @if (Model.UserId != "0")
 {
-    @if (ViewData["Title"].ToString() != "Features")
-    {
         <a href="~/Users/Info?Id=@Model.UserId">
             <h2>User's posts</h2>
         </a>
 
-    }
-    else
-    {
-        <h2>Features</h2>
-    }
 }
     else if (Model.GroupId != 0)
     {
@@ -28,13 +21,13 @@
         {
             <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
         }
-        else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+        else if (Model.Page + 1 == Convert.ToInt32(ViewData["Pages"]))
         {
             <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page - 1)">Previous</a>
         }
         else
         {
-            <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page - 1)">Previous    </a>
+            <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page - 1)">Previous    </a><br />
             <a href="~/Post/Index?groupId=@Model.GroupId&page=@(Model.Page + 1)">Next</a>
         }
     }
@@ -44,13 +37,13 @@
         {
             <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page + 1)">Next</a>
         }
-        else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+        else if (Model.Page + 1 == Convert.ToInt32(ViewData["Pages"]))
         {
             <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous</a>
         }
         else
         {
-            <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous    </a>
+            <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page - 1)">Previous    </a><br />
             <a href="~/Post/Index?userId=@Model.UserId&page=@(Model.Page + 1)">Next</a>
         }
     }
@@ -60,13 +53,13 @@
         {
             <a href="~/Post/Index?page=@(Model.Page + 1)">Next</a>
         }
-        else if (Model.Page == Convert.ToInt32(ViewData["Pages"]))
+        else if (Model.Page + 1 == Convert.ToInt32(ViewData["Pages"]))
         {
             <a href="~/Post/Index?page=@(Model.Page - 1)">Previous</a>
         }
         else
         {
-            <a href="~/Post/Index?page=@(Model.Page - 1)">Previous    </a>
+            <a href="~/Post/Index?page=@(Model.Page - 1)">Previous    </a><br />
             <a href="~/Post/Index?page=@(Model.Page + 1)">Next</a>
         }
     }

@@ -24,6 +24,8 @@ namespace PostItCore.Controllers
 
         public IActionResult Index(int page = 0, int groupId = 0, string filter = "")
         {
+            if (filter == null)
+                filter = "";
             ViewData["Title"] = "Users";
             var context = new PostItDb(Opts());
             var users = _userManager.Users.OrderByDescending(x => x.Rep).ToList();
@@ -32,13 +34,8 @@ namespace PostItCore.Controllers
                 ViewData["Title"] = context.Groups.First(x => x.Id == groupId).Title;
                 users = users.Where(x => context.Subscribes.Any(y => y.UserId == x.Id && y.GroupId == groupId)).ToList();
             }
-            var model = new ViewModels.UsersIndex
-            {
-                Users = users,
-                Page = page,
-                GroupId = groupId
-            };
-            model.Users = model.Users.Where(x => x.Nick.ToLower().Contains(filter.ToLower())).ToList();
+            
+            users = users.Where(x => x.Nick.ToLower().Contains(filter.ToLower())).ToList();
             ViewData["Filter"] = filter;
             
             if (users != null && users.Count > 10)
@@ -49,6 +46,12 @@ namespace PostItCore.Controllers
                 else
                     users = users.GetRange(page * 10, users.Count - page * 10);
             }
+            var model = new ViewModels.UsersIndex
+            {
+                Users = users,
+                Page = page,
+                GroupId = groupId
+            };
             return View(model);
         }
 
@@ -71,17 +74,11 @@ namespace PostItCore.Controllers
 
         public async Task<IActionResult> Mail(int page = 0, string filter = null)
         {
+            if (filter == null)
+                filter = "";
             var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
             var context = new PostItDb(Opts());
             var sms = context.Messages.Where(x => x.DestId == currentUser.Id).OrderByDescending(x => x.Date).ToList();
-            var model = new List<ViewModels.Mail>();
-            foreach(var msg in sms)
-            {
-                var user = _userManager.Users.First(x => x.Id == msg.DepId);
-                model.Add(new ViewModels.Mail { DepId = msg.DepId, Page = page, Text = msg.Text, DepName = user.Nick });
-            }
-            if (filter != null)
-                model = model.Where(x => x.DepName.ToLower().Contains(filter.ToLower()) || x.Text.ToLower().Contains(filter.ToLower())).ToList();
             if (sms != null && sms.Count > 10)
             {
                 ViewData["Pages"] = sms.Count % 10 == 0 ? sms.Count / 10 : sms.Count / 10 + 1;
@@ -90,6 +87,14 @@ namespace PostItCore.Controllers
                 else
                     sms = sms.GetRange(page * 10, sms.Count - page * 10);
             }
+            var model = new List<ViewModels.Mail>();
+            foreach(var msg in sms)
+            {
+                var user = _userManager.Users.First(x => x.Id == msg.DepId);
+                model.Add(new ViewModels.Mail { DepId = msg.DepId, Page = page, Text = msg.Text, DepName = user.Nick });
+            }
+            model = model.Where(x => x.DepName.ToLower().Contains(filter.ToLower()) || x.Text.ToLower().Contains(filter.ToLower())).ToList();
+            ViewData["Filter"] = filter;
             return View(model);
         }
 

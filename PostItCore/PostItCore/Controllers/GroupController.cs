@@ -20,8 +20,10 @@ namespace PostItCore.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(int page = 0, string userName = "0", string filter = null)
+        public async Task<IActionResult> Index(int page = 0, string userName = "0", string filter = "")
         {
+            if (filter == null)
+                filter = "";
             ViewData["Title"] = "Groups";
             var context = new PostItDb(Opts());
             var groups = context.Groups.OrderByDescending(x => x.Rep).ToList();
@@ -34,14 +36,10 @@ namespace PostItCore.Controllers
                 ViewData["Title"] = user.Nick;
                 groups = groups.Where(x => context.Subscribes.Any(y => y.UserId == user.Id && y.GroupId == x.Id) || x.AdminId == user.Id).ToList();
             }
-            var model = new ViewModels.GroupIndex
-            {
-                Groups = groups,
-                Page = page,
-                UserId = userId
-            };
-            if (filter != null && model.Groups.Any())
-                model.Groups = model.Groups.Where(x => x.Title.ToLower().Contains(filter.ToLower())).ToList();
+           
+            groups = groups.Where(x => x.Title.ToLower().Contains(filter.ToLower())).ToList();
+            ViewData["Filter"] = filter;
+            
             if (groups != null && groups.Count > 10)
             {
                 ViewData["Pages"] = groups.Count % 10 == 0 ? groups.Count / 10 : groups.Count / 10 + 1;
@@ -50,6 +48,12 @@ namespace PostItCore.Controllers
                 else
                     groups = groups.GetRange(page * 10, groups.Count - page * 10);
             }
+            var model = new ViewModels.GroupIndex
+            {
+                Groups = groups,
+                Page = page,
+                UserId = userId
+            };
             return View(model);
         }
 

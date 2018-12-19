@@ -1,0 +1,29 @@
+﻿@model PostItCore.ViewModels.PostIndex
+
+    <h2>Features</h2>
+<hr />
+@if (Convert.ToInt32(ViewData["Pages"]) != 0)
+{
+    if (Model.Page == 0)
+    {
+        <a href="~/Post/Features?page=@(Model.Page + 1)&userName=@User.Identity.Name">Next</a>
+    }
+    else if (Model.Page + 1 == Convert.ToInt32(ViewData["Pages"]))
+    {
+        <a href="~/Post/Features?page=@(Model.Page - 1)&userName=@User.Identity.Name">Previous</a>
+    }
+    else
+    {
+        <a href="~/Post/Features?page=@(Model.Page - 1)&userName=@User.Identity.Name">Previous    </a> <br />
+        <a href="~/Post/Features?page=@(Model.Page + 1)&userName=@User.Identity.Name">Next</a>
+    }
+}
+
+@if (Model != null)
+{
+    foreach (var post in Model.Posts)
+    {
+        <hr />
+        <a href="~/Post/Info?postId=@post.Id">@post.Head</a>
+    }
+}
