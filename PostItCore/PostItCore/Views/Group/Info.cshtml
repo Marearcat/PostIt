@@ -18,14 +18,7 @@
             <input type="submit" value="Create Post" class="btn btn-toolbar" />
         </form>
     }
-    if (Model.UserId == Model.Group.AdminId)
-    {
-        <form asp-controller="Group" asp-action="Delete">
-            <input type="hidden" value="@Model.Group.Id" name="Id" class="btn btn-default" />
-            <input type="submit" value="Delete" class="btn btn-danger" />
-        </form>
-    }
-    else if (Model.Sub)
+    if (Model.Sub)
     {
         <form method="post" asp-controller="Group" asp-action="Info">
             <input type="hidden" value="@Model.Group.Id" name="Id" class="btn btn-default" />
@@ -43,6 +36,12 @@
             <input type="submit" value="Subscribe" class="btn btn-success" />
         </form>
     }
-
+    if (Model.UserId == Model.Group.AdminId || User.IsInRole("admin"))
+    {
+        <form asp-controller="Group" asp-action="Delete">
+            <input type="hidden" value="@Model.Group.Id" name="Id" class="btn btn-default" />
+            <input type="submit" value="Delete" class="btn btn-danger" />
+        </form>
+    }
 }
 

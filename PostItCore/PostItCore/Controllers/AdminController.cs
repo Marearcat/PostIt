@@ -28,7 +28,6 @@ namespace PostItCore.Controllers
         }
 
 
-        // GET: Admin
         [Authorize(Roles = "admin")]
         public async Task<ActionResult> Admins()
         {

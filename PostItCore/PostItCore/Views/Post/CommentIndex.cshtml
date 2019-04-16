@@ -32,7 +32,7 @@
         <p>Reputation @comment.Rep</p>
         @if (User.Identity.IsAuthenticated)
         {
-            if (ViewData["currentId"].ToString() == comment.UserId)
+            if (ViewData["currentId"].ToString() == comment.UserId || User.IsInRole("admin"))
             {
                 <form asp-controller="Post" asp-action="CommentDelete">
                     <input type="hidden" value="@comment.Id" name="commentId" class="btn btn-default" />
