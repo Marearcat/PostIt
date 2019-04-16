@@ -17,5 +17,6 @@ namespace PostItCore.Models
         public DbSet<Mail> Messages { get; set; }
         public DbSet<Subscribe> Subscribes { get; set; }
         public DbSet<Favor> Favors { get; set; }
+        public DbSet<Log> Logs { get; set; }
     }
 }

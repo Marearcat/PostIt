@@ -1,0 +1,26 @@
+﻿@model List<PostItCore.Models.Log>
+@{
+    ViewData["Title"] = "CheckLogs";
+}
+
+<h2>CheckLogs</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>User name</th>
+            <th>State</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <th>@log.Id</th>
+                <th>@log.UserName</th>
+                <th>@log.State</th>
+            </tr>
+        }
+    </tbody>
+</table>

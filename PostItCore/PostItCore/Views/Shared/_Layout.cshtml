@@ -61,7 +61,7 @@
                                 <input type="submit" value="Выход" class="btn btn-danger" />
                             </form>
                         </li>
-                        @if(User.IsInRole("admin"))
+                        @if (User.IsInRole("admin"))
                         {
                             <li>
                                 <form asp-controller="Admin" asp-action="Admins">
@@ -71,6 +71,11 @@
                             <li>
                                 <form asp-controller="Admin" asp-action="CommonUsers">
                                     <input type="submit" value="Common Users" class="btn btn-success" />
+                                </form>
+                            </li>
+                            <li>
+                                <form asp-controller="Admin" asp-action="CheckLogs">
+                                    <input type="submit" value="Logs" class="btn btn-success" />
                                 </form>
                             </li>
                         }

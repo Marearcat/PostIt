@@ -121,12 +121,20 @@ namespace PostItCore.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Models.Post model)
+        public async Task<IActionResult> Create(Models.Post model)
         {
-            if (model.UserId != null && model.Head != null && model.Desc != null)
+            try
             {
-                context.Posts.Add(new Post { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, GroupId = model.GroupId, Head = model.Head, Rep = 0 });
-                context.SaveChanges();
+                if (model.UserId != null && model.Head != null && model.Desc != null)
+                {
+                    context.Posts.Add(new Post { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, GroupId = model.GroupId, Head = model.Head, Rep = 0 });
+                    context.SaveChanges();
+                }
+            }
+            catch
+            {
+                context.Logs.Add(new Log { UserName = User.Identity.Name, State = "/CreatePost?" + "head=" + HttpContext.Request.Form["head"] + "&desc=" + HttpContext.Request.Form["desc"] });
+                await context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
@@ -139,12 +147,20 @@ namespace PostItCore.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult CommentCreate(ViewModels.CreateComment model)
+        public async Task<IActionResult> CommentCreate(ViewModels.CreateComment model)
         {
-            if (model.PostId != 0 && model.UserId != null && model.Desc != null)
+            try
             {
-                context.Comments.Add(new Comment { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, PostId = model.PostId, Rep = 0 });
-                context.SaveChanges();
+                if (model.PostId != 0 && model.UserId != null && model.Desc != null)
+                {
+                    context.Comments.Add(new Comment { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, PostId = model.PostId, Rep = 0 });
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch
+            {
+                context.Logs.Add(new Log { UserName = User.Identity.Name, State = "/CreateComment?" + "desc=" + HttpContext.Request.Form["desc"] });
+                await context.SaveChangesAsync();
             }
             return RedirectPermanent(@"~/Post/Info?postId=" + model.PostId);
         }

@@ -64,17 +64,25 @@ namespace PostItCore.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Group model)
         {
-
-            if (model.Title != null && model.Desc != null)
+            try
             {
-                var user = await _userManager.FindByEmailAsync(User.Identity.Name);
-                context.Groups.Add(new Group
+                if (model.Title != null && model.Desc != null && !context.Groups.Any(x => x.Title == model.Title))
                 {
-                    Title = model.Title,
-                    AdminId = user.Id,
-                    Desc = model.Desc,
-                    Rep = 0
-                });
+                    var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+                    
+                    context.Groups.Add(new Group
+                    {
+                        Title = model.Title,
+                        AdminId = user.Id,
+                        Desc = model.Desc,
+                        Rep = 0
+                    });
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch
+            {
+                context.Logs.Add(new Log { UserName = User.Identity.Name, State = "/CreateGroup?" + "title=" + HttpContext.Request.Form["Title"] + "&desc=" + HttpContext.Request.Form["Desc"] });
                 await context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
