@@ -61,6 +61,19 @@
                                 <input type="submit" value="Выход" class="btn btn-danger" />
                             </form>
                         </li>
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li>
+                                <form asp-controller="Admin" asp-action="Admins">
+                                    <input type="submit" value="Admins" class="btn btn-success" />
+                                </form>
+                            </li>
+                            <li>
+                                <form asp-controller="Admin" asp-action="CommonUsers">
+                                    <input type="submit" value="Common Users" class="btn btn-success" />
+                                </form>
+                            </li>
+                        }
                     }
                     else
                     {

@@ -1,0 +1,30 @@
+﻿@model List<PostItCore.Models.User>
+@{
+    ViewData["Title"] = "CommonUsers";
+}
+<h2>CommonUsers</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Nick</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    @user.Nick
+                </td>
+                <td>
+                    <form method="post" asp-controller="Admin" asp-action="MakeAdmin" asp-route-id="@user.Id">
+                        <button type="submit" class="btn btn-sm btn-success">
+                            Make admin
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

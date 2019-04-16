@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,19 +14,21 @@ using PostItCore.Models;
 
 namespace PostItCore.Controllers
 {
+    [Authorize]
     public class PostController : Controller
     {
         private UserManager<User> _userManager;
+        PostItDb context;
 
-        public PostController(UserManager<User> userManager)
+        public PostController(UserManager<User> userManager, PostItDb db)
         {
             _userManager = userManager;
+            context = db;
         }
 
         public IActionResult Index(int page = 0, string userId = "0", int groupId = 0)
         {
             ViewData["Title"] = "Posts";
-            var context = new PostItDb(Opts());
             var posts = context.Posts.OrderByDescending(x => x.Date).ToList();
             if(userId != "0")
             {
@@ -38,7 +41,7 @@ namespace PostItCore.Controllers
             if (posts != null && posts.Count > 10)
             {
                 ViewData["Pages"] = posts.Count % 10 == 0 ? posts.Count / 10 : posts.Count / 10 + 1;
-                if (posts.Count - page * 10 >= 9)
+                if (posts.Count - page * 10 > 9)
                     posts = posts.GetRange(page * 10, 10);
                 else
                     posts = posts.GetRange(page * 10, posts.Count - page * 10);
@@ -55,7 +58,6 @@ namespace PostItCore.Controllers
 
         public async Task<IActionResult> Info(int postId)
         {
-            var context = new PostItDb(Opts());
             var model = new ViewModels.PostInfo();
             var post = context.Posts.Where(x => x.Id == postId).First();
             model.Id = postId;
@@ -87,7 +89,6 @@ namespace PostItCore.Controllers
         {
             if (userId != null && postId != 0)
             {
-                var context = new PostItDb(Opts());
                 var groupId = context.Posts.Where(x => x.Id == postId).First().GroupId;
                 var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
                 if (favor)
@@ -124,7 +125,6 @@ namespace PostItCore.Controllers
         {
             if (model.UserId != null && model.Head != null && model.Desc != null)
             {
-                var context = new PostItDb(Opts());
                 context.Posts.Add(new Post { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, GroupId = model.GroupId, Head = model.Head, Rep = 0 });
                 context.SaveChanges();
             }
@@ -143,7 +143,6 @@ namespace PostItCore.Controllers
         {
             if (model.PostId != 0 && model.UserId != null && model.Desc != null)
             {
-                var context = new PostItDb(Opts());
                 context.Comments.Add(new Comment { UserId = model.UserId, Date = DateTime.Now, Desc = model.Desc, PostId = model.PostId, Rep = 0 });
                 context.SaveChanges();
             }
@@ -152,12 +151,11 @@ namespace PostItCore.Controllers
         
         public async Task<IActionResult> CommentIndex(int postId, int page = 0)
         {
-            var context = new PostItDb(Opts());
             var comments = context.Comments.Where(x => x.PostId == postId).OrderByDescending(x => x.Date).ToList();
             if (comments != null && comments.Count > 10)
             {
                 ViewData["Pages"] = comments.Count % 10 == 0 ? comments.Count / 10 : comments.Count / 10 + 1;
-                if (comments.Count - page * 10 >= 9)
+                if (comments.Count - page * 10 > 9)
                     comments = comments.GetRange(page * 10, 10);
                 else
                     comments = comments.GetRange(page * 10, comments.Count - page * 10);
@@ -178,7 +176,6 @@ namespace PostItCore.Controllers
         {
             if (postId != 0 && commentId != 0 && page >= 0 && userId != null)
             {
-                var context = new PostItDb(Opts());
                 var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
                 if (favor)
                 {
@@ -200,7 +197,6 @@ namespace PostItCore.Controllers
 
         public IActionResult Delete(int Id)
         {
-            var context = new PostItDb(Opts());
             //context.Comments.RemoveRange(context.Comments.Where(x => x.PostId == Id));
             var comments = context.Comments.Where(x => x.PostId == Id);
             foreach(var comment in comments)
@@ -216,7 +212,6 @@ namespace PostItCore.Controllers
 
         public IActionResult CommentDelete(int commentId)
         {
-            var context = new PostItDb(Opts());
             var comment = context.Comments.First(x => x.Id == commentId);
             int postId = comment.PostId;
             context.Comments.Remove(comment);
@@ -228,14 +223,13 @@ namespace PostItCore.Controllers
         public async Task<IActionResult> Features(int page = 0, string userName = "0")
         {
             ViewData["Title"] = "Features";
-            var context = new PostItDb(Opts());
             var posts = context.Posts.OrderByDescending(x => x.Date).ToList();
             var user = await _userManager.FindByEmailAsync(userName);
             posts = posts.Where(x => context.Favors.Any(y => y.IsPost && y.PostId == x.Id && y.UserId == user.Id)).ToList();
             if (posts != null && posts.Count > 10)
             {
                 ViewData["Pages"] = posts.Count % 10 == 0 ? posts.Count / 10 : posts.Count / 10 + 1;
-                if (posts.Count - page * 10 >= 9)
+                if (posts.Count - page * 10 > 9)
                     posts = posts.GetRange(page * 10, 10);
                 else
                     posts = posts.GetRange(page * 10, posts.Count - page * 10);
@@ -248,24 +242,6 @@ namespace PostItCore.Controllers
                 Page = page
             };
             return View(model);
-        }
-
-        public static DbContextOptions<PostItDb> Opts()
-        {
-            var builder = new ConfigurationBuilder();
-            // установка пути к текущему каталогу
-            builder.SetBasePath(Directory.GetCurrentDirectory());
-            // получаем конфигурацию из файла appsettings.json
-            builder.AddJsonFile("appsettings.json");
-            // создаем конфигурацию
-            var config = builder.Build();
-            // получаем строку подключения
-            string connectionString = config.GetConnectionString("DefaultConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<PostItDb>();
-            return optionsBuilder
-                .UseSqlServer(connectionString)
-                .Options;
         }
     }
 }

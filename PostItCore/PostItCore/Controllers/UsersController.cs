@@ -10,16 +10,22 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PostItCore.Controllers
 {
+    [Authorize]
     public class UsersController : Controller
     {
         UserManager<Models.User> _userManager;
+        RoleManager<IdentityRole> _roleManager;
+        PostItDb context;
 
-        public UsersController(UserManager<Models.User> userManager)
+        public UsersController(UserManager<Models.User> userManager, RoleManager<IdentityRole> roleManager, PostItDb db)
         {
-                _userManager = userManager;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            context = db;
         }
 
         public IActionResult Index(int page = 0, int groupId = 0, string filter = "")
@@ -27,7 +33,6 @@ namespace PostItCore.Controllers
             if (filter == null)
                 filter = "";
             ViewData["Title"] = "Users";
-            var context = new PostItDb(Opts());
             var users = _userManager.Users.OrderByDescending(x => x.Rep).ToList();
             if (groupId != 0)
             {
@@ -66,7 +71,6 @@ namespace PostItCore.Controllers
         [HttpPost]
         public IActionResult Type(ViewModels.Type model)
         {
-            var context = new PostItDb(Opts());
             context.Messages.Add(new Models.Mail { DepId = model.DepId, DestId = model.DestId, Text = model.Text, Date = DateTime.Now });
             context.SaveChangesAsync();
             return RedirectToAction("Mail");
@@ -77,12 +81,11 @@ namespace PostItCore.Controllers
             if (filter == null)
                 filter = "";
             var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
-            var context = new PostItDb(Opts());
             var sms = context.Messages.Where(x => x.DestId == currentUser.Id).OrderByDescending(x => x.Date).ToList();
             if (sms != null && sms.Count > 10)
             {
                 ViewData["Pages"] = sms.Count % 10 == 0 ? sms.Count / 10 : sms.Count / 10 + 1;
-                if (sms.Count - page * 10 >= 9)
+                if (sms.Count - page * 10 > 9)
                     sms = sms.GetRange(page * 10, 10);
                 else
                     sms = sms.GetRange(page * 10, sms.Count - page * 10);
@@ -98,24 +101,17 @@ namespace PostItCore.Controllers
             return View(model);
         }
 
-        public static DbContextOptions<PostItDb> Opts()
-        {
-            var builder = new ConfigurationBuilder();
-            // установка пути к текущему каталогу
-            builder.SetBasePath(Directory.GetCurrentDirectory());
-            // получаем конфигурацию из файла appsettings.json
-            builder.AddJsonFile("appsettings.json");
-            // создаем конфигурацию
-            var config = builder.Build();
-            // получаем строку подключения
-            string connectionString = config.GetConnectionString("DefaultConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<PostItDb>();
-            return optionsBuilder
-                .UseSqlServer(connectionString)
-                .Options;
-        }
-
+        //[HttpPost]
+        //public async Task<IActionResult> TimeAdmin(string Id)
+        //{
+        //    if (!context.Roles.Any(x => x.Name == "admin"))
+        //        await _roleManager.CreateAsync(new IdentityRole { Name = "admin" });
+        //    var user = await _userManager.FindByIdAsync(Id);
+        //    var admins = await _userManager.GetUsersInRoleAsync("admin");
+        //    if (!admins.Contains(user))
+        //        await _userManager.AddToRoleAsync(user, "admin");
+        //    return RedirectToAction("Index");
+        //}
     }
 
 }

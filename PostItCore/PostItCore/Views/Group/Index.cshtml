@@ -33,7 +33,7 @@ else if (Convert.ToInt32(ViewData["Pages"]) != 0)
         <a href="~/Group/Index?page=@(Model.Page + 1)&filter=@ViewData["Filter"]">Next</a>
     }
 }
-@if (User.Identity.IsAuthenticated && Model.UserId == "0")
+@if (User.Identity.IsAuthenticated)
 {
         <form method="get" asp-controller="Group" asp-action="Create">
             <input type="submit" value="Create" class="btn btn-default" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,15 @@ using PostItCore.Models;
 
 namespace PostItCore.Controllers
 {
+    [Authorize]
     public class GroupController : Controller
     {
         UserManager<Models.User> _userManager;
+        PostItDb context;
 
-        public GroupController(UserManager<Models.User> userManager)
+        public GroupController(UserManager<Models.User> userManager, PostItDb db)
         {
+            context = db;
             _userManager = userManager;
         }
 
@@ -25,7 +29,6 @@ namespace PostItCore.Controllers
             if (filter == null)
                 filter = "";
             ViewData["Title"] = "Groups";
-            var context = new PostItDb(Opts());
             var groups = context.Groups.OrderByDescending(x => x.Rep).ToList();
             var user = new Models.User();
             string userId = "0";
@@ -43,7 +46,7 @@ namespace PostItCore.Controllers
             if (groups != null && groups.Count > 10)
             {
                 ViewData["Pages"] = groups.Count % 10 == 0 ? groups.Count / 10 : groups.Count / 10 + 1;
-                if (groups.Count - page * 10 >= 9)
+                if (groups.Count - page * 10 > 9)
                     groups = groups.GetRange(page * 10, 10);
                 else
                     groups = groups.GetRange(page * 10, groups.Count - page * 10);
@@ -64,7 +67,6 @@ namespace PostItCore.Controllers
 
             if (model.Title != null && model.Desc != null)
             {
-                var context = new PostItDb(Opts());
                 var user = await _userManager.FindByEmailAsync(User.Identity.Name);
                 context.Groups.Add(new Group
                 {
@@ -80,7 +82,6 @@ namespace PostItCore.Controllers
 
         public async Task<IActionResult> Info(int Id)
         {
-            var context = new PostItDb(Opts());
             var currentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
             var model = new ViewModels.GroupInfo
             {
@@ -101,7 +102,6 @@ namespace PostItCore.Controllers
         {
             if (userId != null && Id != 0)
             {
-                var context = new PostItDb(Opts());
                 if (sub)
                     context.Subscribes.Add(new Subscribe { UserId = userId, GroupId = Id });
                 else
@@ -114,7 +114,6 @@ namespace PostItCore.Controllers
 
         public IActionResult Delete(int Id)
         {
-            var context = new PostItDb(Opts());
             var posts = context.Posts.Where(x => x.GroupId == Id);
             foreach(var post in posts)
             {
@@ -134,23 +133,6 @@ namespace PostItCore.Controllers
             return RedirectToAction("Index");
         }
 
-        public static DbContextOptions<PostItDb> Opts()
-        {
-            var builder = new ConfigurationBuilder();
-            // установка пути к текущему каталогу
-            builder.SetBasePath(Directory.GetCurrentDirectory());
-            // получаем конфигурацию из файла appsettings.json
-            builder.AddJsonFile("appsettings.json");
-            // создаем конфигурацию
-            var config = builder.Build();
-            // получаем строку подключения
-            string connectionString = config.GetConnectionString("DefaultConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<PostItDb>();
-            return optionsBuilder
-                .UseSqlServer(connectionString)
-                .Options;
-        }
-
+        
     }
 }
