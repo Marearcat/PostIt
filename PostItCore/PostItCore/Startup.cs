@@ -68,6 +68,12 @@ namespace PostItCore
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Post}/{action=Index}");
+                routes.MapRoute(
+                    name: "admin",
+                    template: "secret/{controller=Admin}/{action=Admins}");
+                routes.MapRoute(
+                    name: "logs",
+                    template: "secret/{controller=Admin}/Logs");
             });
         }
     }

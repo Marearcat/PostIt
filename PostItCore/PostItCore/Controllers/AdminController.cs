@@ -14,13 +14,15 @@ using PostItCore.Models;
 
 namespace PostItCore.Controllers
 {
+    
     [Authorize(Roles = "admin")]
+    [Route("secret/[controller]")]
     public class AdminController : Controller
     {
         UserManager<Models.User> _userManager;
         RoleManager<IdentityRole> _roleManager;
         PostItDb context;
-
+        
         public AdminController(UserManager<Models.User> userManager, RoleManager<IdentityRole> roleManager, PostItDb db)
         {
             context = db;
@@ -29,6 +31,7 @@ namespace PostItCore.Controllers
         }
 
         [Authorize(Roles = "admin")]
+        [Route("[action]")]
         public async Task<ActionResult> Admins()
         {
             var thisUser = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -39,6 +42,7 @@ namespace PostItCore.Controllers
 
         [LogsActionFilter]
         [Authorize(Roles = "admin")]
+        [Route("Logs")]
         public IActionResult CheckLogs()
         {
             var logs = context.Logs.OrderByDescending(x => x.Id).ToList();
@@ -46,6 +50,7 @@ namespace PostItCore.Controllers
         }
 
         [Authorize(Roles = "admin")]
+        [Route("Users")]
         public async Task<ActionResult> CommonUsers(int page = 0)
         {
             var thisUser = await _userManager.FindByNameAsync(User.Identity.Name);

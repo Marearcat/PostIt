@@ -69,10 +69,10 @@ namespace PostItCore.Controllers
             return View(model);
         }
         [HttpPost]
-        public IActionResult Type(ViewModels.Type model)
+        public async Task<IActionResult> Type(ViewModels.Type model)
         {
             context.Messages.Add(new Models.Mail { DepId = model.DepId, DestId = model.DestId, Text = model.Text, Date = DateTime.Now });
-            context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return RedirectToAction("Mail");
         }
 
